@@ -1,25 +1,19 @@
 pipeline {
     agent any
-
     stages {
-        stage('Code') {
+        stage('code') {
             steps {
-              git 'https://github.com/ramyachetty/web-app.git'
+                git 'https://github.com/Maheshbisoi/web-app.git'
             }
         }
-        stage('code-build') {
+        stage('Build') {
             steps {
-                 sh "mvn clean package"
+                sh 'mvn clean package'
             }
         }
-        stage('Image-build') {
-            steps {
-                sh 'docker build -t tomcat:app .'
-            }
-        }
-        stage('Deploy') {
-            steps {
-              sh 'docker run -itd --name app1 -p 8081:8080 tomcat:app'
+        stage('artifact'){
+            steps{
+                nexusArtifactUploader artifacts: [[artifactId: 'myweb', classifier: '', file: 'target/myweb-8.6.6.war', type: '.war']], credentialsId: 'nexus', groupId: 'in.javahome', nexusUrl: '13.213.37.248:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'my-app', version: '8.6.6'
             }
         }
     }
